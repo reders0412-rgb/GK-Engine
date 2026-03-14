@@ -35,7 +35,7 @@ set(CURL_USE_SCHANNEL ON  CACHE BOOL "" FORCE)
 
 FetchContent_Declare(minizip
     GIT_REPOSITORY https://github.com/zlib-ng/minizip-ng.git
-    GIT_TAG        4.0.5 GIT_SHALLOW TRUE)
+    GIT_TAG        3.0.9 GIT_SHALLOW TRUE)
 set(MZ_FETCH_LIBS   ON  CACHE BOOL "" FORCE)
 set(MZ_ZLIB         ON  CACHE BOOL "" FORCE)
 set(MZ_BZIP2        OFF CACHE BOOL "" FORCE)

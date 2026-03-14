@@ -2,6 +2,7 @@
 #include <nlohmann/json.hpp>
 #include <curl/curl.h>
 #include <mz.h>
+#include <mz_strm.h>      // mz_stream_write_cb / mz_stream_read_cb 타입 먼저
 #include <mz_zip.h>
 #include <mz_zip_rw.h>
 #include <fstream>

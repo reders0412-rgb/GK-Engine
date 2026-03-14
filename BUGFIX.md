@@ -86,3 +86,48 @@ target_include_directories(GKHub PRIVATE
 | `GKHub/src/VersionManager.cpp` | `minizip/mz*.h` → `mz*.h` |
 | `GKHub/src/TemplateManager.cpp` | `minizip/mz*.h` → `mz*.h` |
 | `GKHub/CMakeLists.txt` | `_mz_parent` 제거, include path 단순화 |
+
+---
+
+### Bug 4: `mz_zip_rw.h` — `mz_stream_write_cb` / `mz_stream_read_cb` 타입 미정의
+
+**에러 메시지:**
+```
+mz_zip_rw.h(82): error C2061: syntax error: identifier 'mz_stream_write_cb'
+mz_zip_rw.h(85): error C2061: syntax error: identifier 'mz_stream_write_cb'
+mz_zip_rw.h(189): error C2061: syntax error: identifier 'mz_stream_read_cb'
+```
+
+**원인:**  
+minizip-ng **4.0.5**에서 `mz_zip_rw.h`가 `mz_strm.h`를 자체적으로 include하지 않아  
+`mz_stream_write_cb` / `mz_stream_read_cb` 타입 선언이 없는 상태로 헤더가 파싱됨.  
+MSVC는 이 경우 엄격하게 에러를 냄 (GCC/Clang은 운 좋게 통과하기도 함).
+
+**수정 1 — minizip-ng 버전 다운그레이드 (`GKHub/CMakeLists.txt`):**
+```cmake
+# Before
+GIT_TAG  4.0.5 GIT_SHALLOW TRUE
+
+# After
+GIT_TAG  3.0.9 GIT_SHALLOW TRUE
+```
+→ 3.0.9은 헤더 의존성이 올바르게 정리되어 있어 이 문제 없음.
+
+**수정 2 — include 순서 보강 (`VersionManager.cpp`, `TemplateManager.cpp`):**
+```cpp
+#include <mz.h>
+#include <mz_strm.h>   // 반드시 mz_zip_rw.h 보다 먼저
+#include <mz_zip.h>
+#include <mz_zip_rw.h>
+```
+
+---
+
+## 전체 수정 파일 요약 (누적)
+
+| 파일 | 수정 내용 |
+|------|-----------|
+| `GKHub/src/RmlBackend.cpp` | `<GL/gl.h>` → `<SDL_opengl.h>` |
+| `GKHub/src/VersionManager.cpp` | minizip include 경로 + 순서 수정 |
+| `GKHub/src/TemplateManager.cpp` | minizip include 경로 + 순서 수정 |
+| `GKHub/CMakeLists.txt` | minizip-ng `4.0.5` → `3.0.9`, include path 정리 |
