@@ -40,7 +40,7 @@ jobs:
           cmake -B build/hub GKHub `
             -G "Visual Studio 17 2022" -A x64 `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
-            -DCMAKE_PREFIX_PATH="${{ github.workspace }}/build/core" ` # 이 줄을 추가!
+            -DCMAKE_PREFIX_PATH="${{ github.workspace }}/build/core" `
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build/hub --config Release -j4
 
