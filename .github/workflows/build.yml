@@ -40,14 +40,15 @@ jobs:
       - name: Configure & Build Hub
         shell: pwsh
         run: |
+          # Hub는 FetchContent로 모든 의존성을 직접 빌드하므로
+          # vcpkg toolchain 불필요 — 넘기면 BUILD_SHARED_LIBS 등 캐시가 충돌함
           $cmakeArgs = @(
             "-B", "build/hub",
             "-S", "GKHub",
             "-G", "Visual Studio 17 2022",
             "-A", "x64",
-            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake",
-            "-DVCPKG_TARGET_TRIPLET=x64-windows",
-            "-DCMAKE_BUILD_TYPE=Release"
+            "-DCMAKE_BUILD_TYPE=Release",
+            "-DBUILD_SHARED_LIBS=OFF"   # RmlUi static .lib 보장
           )
           
           cmake @cmakeArgs
