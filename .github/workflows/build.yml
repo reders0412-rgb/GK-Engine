@@ -34,15 +34,25 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build/core --config Release -j4
 
-      # 3. GK Hub 빌드 (경로 명시 추가)
       - name: Configure & Build Hub
+        shell: pwsh
         run: |
-          cmake -B build/hub GKHub `
-            -G "Visual Studio 17 2022" -A x64 `
-            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
-            -DCMAKE_PREFIX_PATH="${{ github.workspace }}/build/core" `
-            -DCMAKE_BUILD_TYPE=Release
-          cmake --build build/hub --config Release -j4
+          # 인자들을 리스트로 미리 정의 (가독성 UP!)
+          $cmakeArgs = @(
+            "-B", "build/hub",
+            "-S", "GKHub",
+            "-G", "Visual Studio 17 2022",
+            "-A", "x64",
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake",
+            "-DCMAKE_PREFIX_PATH=${{ github.workspace }}/build/core",
+            "-DCMAKE_BUILD_TYPE=Release"
+          )
+          
+          # @ 연산자로 인자 전달
+          cmake @cmakeArgs
+          
+          # 빌드 실행
+          cmake --build build/hub --config Release -j 4
 
       # 4. GK Engine UI 빌드 (가이드 5번 항목 적용)
       - name: Build Engine UI
